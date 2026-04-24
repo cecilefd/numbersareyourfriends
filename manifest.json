@@ -1,0 +1,14 @@
+{
+  "name": "Numbers are your friends",
+  "short_name": "Numbers",
+  "description": "Daily math drills — multiplication, percentages, and times tables.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e8e3f3",
+  "theme_color": "#6b4fb8",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

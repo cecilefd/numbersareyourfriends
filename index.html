@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Numberly — Daily Math Drills</title>
+<title>Numbers are your friends — Daily Math Drills</title>
+<!-- PWA / Add-to-Home-Screen support -->
+<meta name="theme-color" content="#6b4fb8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Numbers">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
+<!-- Funky display fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400&family=Caveat:wght@400;700&display=swap">
 <style>
   /* ---- Blue/purple hippy-nerd palette ---- */
   :root {
@@ -20,15 +31,61 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Georgia', 'Times New Roman', serif;
+    font-family: 'Fraunces', 'Georgia', serif;
     background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
     display: flex; align-items: flex-start; justify-content: center;
     padding: 24px;
+    position: relative;
+    overflow-x: hidden;
     background-image:
       radial-gradient(circle at 20% 30%, rgba(107,79,184,0.18) 0%, transparent 50%),
       radial-gradient(circle at 80% 70%, rgba(74,123,154,0.20) 0%, transparent 50%);
+  }
+
+  /* ---- Floating math-symbol bubbles behind the app card ---- */
+  .math-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bubble {
+    position: absolute;
+    border: 3px solid var(--ink);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', 'Georgia', serif;
+    font-weight: bold;
+    opacity: 0.85;
+  }
+  .bubble.sm { width: 42px; height: 42px; font-size: 20px; }
+  .bubble.md { width: 56px; height: 56px; font-size: 26px; }
+  .bubble.lg { width: 72px; height: 72px; font-size: 34px; }
+  .bubble.c-lav  { background: var(--lavender); color: var(--ink); }
+  .bubble.c-teal { background: var(--teal);     color: white; }
+  .bubble.c-prim { background: var(--primary-light); color: white; }
+  .bubble.c-bg   { background: var(--paper);    color: var(--primary); }
+  @keyframes floatA { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-14px) rotate(-6deg); } }
+  @keyframes floatB { 0%,100% { transform: translateY(0) rotate(9deg); }  50% { transform: translateY(-18px) rotate(9deg); } }
+  @keyframes floatC { 0%,100% { transform: translateY(0) rotate(-14deg); } 50% { transform: translateY(-10px) rotate(-14deg); } }
+  @keyframes floatD { 0%,100% { transform: translateY(0) rotate(4deg); }  50% { transform: translateY(-16px) rotate(4deg); } }
+  .bubble.a1 { top:  6%; left:  4%;  animation: floatA 7s ease-in-out infinite; }
+  .bubble.a2 { top: 14%; right: 5%;  animation: floatB 6s ease-in-out infinite; }
+  .bubble.a3 { top: 30%; left:  2%;  animation: floatC 8s ease-in-out infinite; }
+  .bubble.a4 { top: 40%; right: 3%;  animation: floatD 7.5s ease-in-out infinite; }
+  .bubble.a5 { top: 58%; left:  5%;  animation: floatB 6.5s ease-in-out infinite; }
+  .bubble.a6 { top: 64%; right: 6%;  animation: floatA 8.5s ease-in-out infinite; }
+  .bubble.a7 { bottom: 8%; left:  8%; animation: floatD 7s ease-in-out infinite; }
+  .bubble.a8 { bottom: 14%; right: 9%; animation: floatC 8s ease-in-out infinite; }
+  .bubble.a9 { top: 80%; left: 40%; animation: floatA 9s ease-in-out infinite; }
+  .bubble.a10 { top: 4%; left: 42%; animation: floatB 8s ease-in-out infinite; }
+
+  /* Hide the decorative bubbles on narrow screens where they'd crowd the card */
+  @media (max-width: 720px) {
+    .bubble.a3, .bubble.a4, .bubble.a5, .bubble.a6, .bubble.a9, .bubble.a10 { display: none; }
   }
   .app {
     background: var(--paper);
@@ -38,6 +95,7 @@
     max-width: 580px; width: 100%;
     box-shadow: 8px 8px 0 var(--ink);
     position: relative;
+    z-index: 1;
     margin-top: 30px;
   }
   .app::before, .app::after {
@@ -52,13 +110,20 @@
   .app::after  { content: "∑"; bottom: -20px; right: 28px; background: var(--teal); color: white; }
 
   h1 {
-    font-size: 36px;
+    font-family: 'Fraunces', 'Georgia', serif;
+    font-size: 38px;
     color: var(--primary);
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
+    line-height: 1.05;
+    /* Fraunces' "WONK" axis turns on its quirkier letterforms */
+    font-variation-settings: "opsz" 144, "SOFT" 80, "WONK" 1;
+    font-weight: 700;
   }
   .tagline {
-    font-style: italic; color: var(--accent);
-    margin-bottom: 24px; font-size: 14px;
+    font-family: 'Caveat', 'Georgia', cursive;
+    color: var(--accent);
+    margin-bottom: 24px;
+    font-size: 22px;
   }
 
   .stats {
@@ -148,6 +213,35 @@
   .feedback.show { display: block; }
   .feedback.correct { background: var(--correct); color: white; }
   .feedback.wrong { background: var(--wrong); color: white; }
+
+  /* ---- Celebration pop + sparkles on a correct answer ---- */
+  @keyframes pop {
+    0%   { transform: scale(0.4) rotate(-4deg); opacity: 0; }
+    60%  { transform: scale(1.12) rotate(2deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+  }
+  .feedback.correct.show { animation: pop 0.45s cubic-bezier(.2,1.2,.3,1); }
+  .sparkle {
+    position: fixed;
+    pointer-events: none;
+    font-family: 'Fraunces', serif;
+    font-weight: bold;
+    font-size: 22px;
+    z-index: 200;
+    animation: sparkle-fly 0.9s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  @keyframes sparkle-fly {
+    0%   { transform: translate(0,0) scale(0.3) rotate(0deg); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translate(var(--dx, 0), var(--dy, 0)) scale(1.3) rotate(240deg); opacity: 0; }
+  }
+  @keyframes statPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.25); }
+    100% { transform: scale(1); }
+  }
+  .stat-value.pulse { animation: statPulse 0.5s ease-out; color: var(--correct); }
 
   .summary-list { list-style: none; margin: 12px 0; }
   .summary-list li {
@@ -279,8 +373,23 @@
 </style>
 </head>
 <body>
+
+<!-- Decorative math-symbol bubbles scattered behind the app -->
+<div class="math-bg" aria-hidden="true">
+  <div class="bubble sm c-lav  a1">√</div>
+  <div class="bubble md c-teal a2">∞</div>
+  <div class="bubble lg c-prim a3">π</div>
+  <div class="bubble sm c-bg   a4">÷</div>
+  <div class="bubble md c-lav  a5">Δ</div>
+  <div class="bubble sm c-teal a6">φ</div>
+  <div class="bubble lg c-bg   a7">∑</div>
+  <div class="bubble md c-prim a8">≈</div>
+  <div class="bubble sm c-lav  a9">θ</div>
+  <div class="bubble sm c-teal a10">%</div>
+</div>
+
 <div class="app">
-  <h1>Numberly</h1>
+  <h1>Numbers are your friends</h1>
   <p class="tagline">~ one small daily drill ~</p>
 
   <div class="stats">
@@ -345,11 +454,37 @@
 // ================================================================
 const SESSION_LENGTH = 20;
 
+// ---- DATE HELPERS ----------------------------------------------
+// Dates are stored as YYYY-MM-DD for reliable day-diff math across
+// timezones and versions. Migrates any old toDateString() values.
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function toDateKey(s) {
+  if (!s) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  const d = new Date(s);
+  if (isNaN(d)) return null;
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function daysBetween(aKey, bKey) {
+  // Parse YYYY-MM-DD explicitly as local-time components so we avoid any
+  // ISO-string timezone interpretation differences between browsers.
+  const [ay, am, ad] = aKey.split('-').map(Number);
+  const [by, bm, bd] = bKey.split('-').map(Number);
+  const a = new Date(ay, am - 1, ad).getTime();
+  const b = new Date(by, bm - 1, bd).getTime();
+  return Math.round((b - a) / 86400000);
+}
+
 // ---- STORAGE ---------------------------------------------------
 function loadState() {
   const raw = localStorage.getItem('numberly');
   if (!raw) return { streak: 0, bestStreak: 0, xp: 0, lastPlayed: null };
-  return JSON.parse(raw);
+  const s = JSON.parse(raw);
+  s.lastPlayed = toDateKey(s.lastPlayed); // migrate legacy format
+  return s;
 }
 function saveState(s) { localStorage.setItem('numberly', JSON.stringify(s)); }
 
@@ -453,11 +588,13 @@ function percentageQuestion() {
 }
 
 function tableQuestion() {
-  // Full times table for N, with 2 rows blanked out.
-  const n = randInt(2, 12);
+  // Full times table for N (3 through 12 — skip the trivial 2× table)
+  // with 2 rows blanked out (avoiding ×1 and ×10 since those are trivial).
+  const n = randInt(3, 12);
+  const blankChoices = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12];
   const positions = [];
   while (positions.length < 2) {
-    const p = randInt(2, 12);   // never blank the ×1 row — it anchors the table
+    const p = blankChoices[randInt(0, blankChoices.length - 1)];
     if (!positions.includes(p)) positions.push(p);
   }
   positions.sort((a, b) => a - b);
@@ -502,6 +639,9 @@ function startSession() {
 }
 
 function renderQuestion() {
+  // Reset the calculator so each new question starts from zero
+  calcExpr = '';
+  document.getElementById('calc-display').textContent = '0';
   const q = session.questions[session.index];
   document.getElementById('progress').style.width =
     `${(session.index / SESSION_LENGTH) * 100}%`;
@@ -590,6 +730,7 @@ function submitAnswer() {
   if (correct) {
     fb.classList.add('correct');
     fb.textContent = 'Correct! ✓';
+    celebrate();
   } else {
     fb.classList.add('wrong');
     fb.textContent = q.type === 'table'
@@ -606,10 +747,14 @@ function submitAnswer() {
 
 function endSession() {
   const state = loadState();
-  const today = new Date().toDateString();
+  const today = todayKey();
   if (state.lastPlayed !== today) {
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    state.streak = (state.lastPlayed === yesterday) ? state.streak + 1 : 1;
+    const daysSince = state.lastPlayed ? daysBetween(state.lastPlayed, today) : null;
+    if (daysSince === 1) {
+      state.streak += 1;   // consecutive day — keep the chain going
+    } else {
+      state.streak = 1;    // first-ever session, or a gap — start fresh
+    }
     state.bestStreak = Math.max(state.bestStreak, state.streak);
     state.lastPlayed = today;
   }
@@ -631,6 +776,31 @@ function endSession() {
   showScreen('summary');
 }
 
+// ---- CELEBRATION ON CORRECT -----------------------------------
+function celebrate() {
+  const fb = document.getElementById('feedback');
+  const rect = fb.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const symbols = ['✦', '✧', '★', '✺', '◉', '✹', '✸'];
+  const colors  = ['var(--primary)', 'var(--teal)', 'var(--primary-light)', 'var(--accent)'];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = symbols[i % symbols.length];
+    s.style.color = colors[i % colors.length];
+    s.style.left = cx + 'px';
+    s.style.top  = cy + 'px';
+    const angle = (i / 14) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+    const distance = 90 + Math.random() * 60;
+    s.style.setProperty('--dx', Math.cos(angle) * distance + 'px');
+    s.style.setProperty('--dy', Math.sin(angle) * distance + 'px');
+    s.style.animationDelay = (Math.random() * 0.1) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1100);
+  }
+}
+
 function goHome() { showScreen('home'); refreshHomeMessage(); }
 
 function showScreen(id) {
@@ -647,15 +817,22 @@ function refreshStats() {
 
 function refreshHomeMessage() {
   const s = loadState();
-  const today = new Date().toDateString();
+  const today = todayKey();
   const msg = document.getElementById('home-msg');
+  let main;
   if (s.lastPlayed === today) {
-    msg.textContent = `Nice — you've already practiced today. Come back tomorrow to keep your streak, or do another round for extra XP.`;
+    main = `Nice — you've already practised today. Come back tomorrow to keep your ${s.streak}-day streak going.`;
+  } else if (s.streak > 0 && s.lastPlayed && daysBetween(s.lastPlayed, today) === 1) {
+    main = `You're on a ${s.streak}-day streak. Practise today to make it ${s.streak + 1}!`;
   } else if (s.streak > 0) {
-    msg.textContent = `You're on a ${s.streak}-day streak. Don't break the chain!`;
+    main = `You had a ${s.streak}-day streak — it'll reset to 1 today when you practise.`;
   } else {
-    msg.textContent = `Welcome. Start a daily practice and watch your streak grow.`;
+    main = `Welcome. Start a daily practice and watch your streak grow.`;
   }
+  const detail = s.lastPlayed
+    ? `<span style="display:block;margin-top:10px;font-size:13px;color:var(--accent);opacity:0.75;">Last practised: ${s.lastPlayed}</span>`
+    : '';
+  msg.innerHTML = main + detail;
 }
 
 // Enter key: advances between blanks if there are empty ones,
